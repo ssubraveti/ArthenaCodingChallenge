@@ -3,7 +3,7 @@ import argparse
 from ArtParser import ArtParser
 
 if __name__ == '__main__':
-    # Take path to data directory as command line argument
+    # Take paths to data directories as command line arguments
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--paths', nargs='+', default=[])
     args = arg_parser.parse_args()
