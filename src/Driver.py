@@ -5,10 +5,10 @@ from ArtParser import ArtParser
 if __name__ == '__main__':
     # Take path to data directory as command line argument
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--path', type=str)
+    arg_parser.add_argument('--paths', nargs='+', default=[])
     args = arg_parser.parse_args()
-    path = args.path
-    parser = ArtParser(path)
+    paths = args.paths
+    parser = ArtParser(paths)
 
     # Get painters mentioned in the webpages
     art_info = parser.get_artwork_info()
