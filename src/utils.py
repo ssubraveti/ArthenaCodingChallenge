@@ -3,20 +3,32 @@ import unicodedata
 from collections import OrderedDict
 
 
-def convert_dict_to_json(input_dict):
+def convert_dict_to_json(painter_dict, prices_dict):
     """
     Convert a dictionary of metadata information into a JSONArray
-    :param input_dict: Dictionary of metadata
+    :param painter_dict: Dictionary of metadata
+    :param prices_dict: Dictionary of prices
     :return:
-
+    json_array: A string form of the JSON array
     """
     final_array = []
 
-    for key, value in input_dict.iteritems():
+    for artist, works in painter_dict.iteritems():
         data_dict = OrderedDict()
-        data_dict['artist'] = key
-        data_dict['works'] = value
-
+        data_dict['artist'] = artist
+        work_data = []
+        # Store prices for each work by the artist
+        for work in works:
+            work_metadata = OrderedDict()
+            # Title of the work
+            work_metadata['title'] = work
+            # Currency of the price
+            work_metadata['currency'] = prices_dict[work].split(" ")[0]
+            # Amount
+            work_metadata['amount'] = prices_dict[work].split(" ")[1]
+            work_data.append(work_metadata)
+        # Works by the artist
+        data_dict['works'] = work_data
         final_array.append(data_dict)
 
     return json.dumps(final_array, indent=4)

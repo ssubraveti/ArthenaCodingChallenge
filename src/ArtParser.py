@@ -56,21 +56,26 @@ class ArtParser:
         painter_names: A JSONArray of unique painter names found in the HTML files of the directory.
         """
         painter_data = {}
+        prices = {}
         div_tags_list = self.get_div_tags()
 
         for div_tags in div_tags_list:
             # Extract information from div tags
             content = div_tags[0].contents[0].split("\n")
+            price = utils.convert_string_to_ascii(div_tags[1].contents[0].strip())
+
             # Strip leading and trailing white spaces
             artist = utils.convert_string_to_ascii(content[1].split("(")[0].strip())
+            work = utils.convert_string_to_ascii(content[2].strip())
 
             if artist in painter_data:
-                painter_data[artist].append(utils.convert_string_to_ascii(content[2].strip()))
+                painter_data[artist].append(work)
+                prices[work] = price
             else:
                 painter_data[artist] = []
                 painter_data[artist].append(utils.convert_string_to_ascii(content[2].strip()))
-
+                prices[work] = price
         # Convert dict to JSONArray
-        json_array = utils.convert_dict_to_json(painter_data)
+        json_array = utils.convert_dict_to_json(painter_data, prices)
         # Return unique names only, and convert the list to a JSONArray
         return json_array
