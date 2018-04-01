@@ -11,6 +11,6 @@ if __name__ == '__main__':
     parser = ArtParser(path)
 
     # Get painters mentioned in the webpages
-    tag_list = parser.get_painter_names()
+    art_info = parser.get_artwork_info()
 
-    print tag_list
+    print art_info

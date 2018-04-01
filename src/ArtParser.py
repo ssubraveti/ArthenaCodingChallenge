@@ -1,8 +1,8 @@
-import json
 import os
-import unicodedata
 
 from bs4 import BeautifulSoup
+
+import utils
 
 """
 Class that describes an ArtParser object.
@@ -34,21 +34,43 @@ class ArtParser:
 
         return soups
 
-    def get_painter_names(self):
+    def get_div_tags(self):
 
         """
-        Function that extracts painter names from the BeautifulSoup objects of the files
+        Function that returns a list of div tags containing information to be parsed
+        :return:
+        """
+        div_tags = []
+
+        for soup_object in self.soup_objects:
+            # Get first div tags of the HTML files
+            div_tags.append(soup_object.find_all("div"))
+
+        return div_tags
+
+    def get_artwork_info(self):
+
+        """
+        Function that extracts artwork metadata from the BeautifulSoup objects of the files
         :return:
         painter_names: A JSONArray of unique painter names found in the HTML files of the directory.
         """
-        painter_names = []
+        painter_data = {}
+        div_tags_list = self.get_div_tags()
 
-        for soup_object in self.soup_objects:
-            # Extract information from the first div tag
-            div_tag = soup_object.find("div").contents[0].split("\n")
+        for div_tags in div_tags_list:
+            # Extract information from div tags
+            content = div_tags[0].contents[0].split("\n")
             # Strip leading and trailing white spaces
-            name = div_tag[1].split("(")[0].strip()
-            # Convert from unicode to ascii. Convert accented characters to normal form.
-            painter_names.append(unicodedata.normalize("NFKD", name).encode("ascii", "ignore"))
+            artist = utils.convert_string_to_ascii(content[1].split("(")[0].strip())
+
+            if artist in painter_data:
+                painter_data[artist].append(utils.convert_string_to_ascii(content[2].strip()))
+            else:
+                painter_data[artist] = []
+                painter_data[artist].append(utils.convert_string_to_ascii(content[2].strip()))
+
+        # Convert dict to JSONArray
+        json_array = utils.convert_dict_to_json(painter_data)
         # Return unique names only, and convert the list to a JSONArray
-        return json.dumps(list(set(painter_names)))
+        return json_array
